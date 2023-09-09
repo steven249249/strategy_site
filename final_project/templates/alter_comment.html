@@ -1,0 +1,38 @@
+{% extends 'base1.html' %}
+<!-- Main content: shift it to the right by 250 pixels when the sidebar is visible -->
+{% block title %}修改留言{% endblock %}
+{% block px %}700{% endblock %}
+  {% block message %}
+  <div class="w3-row w3-padding-64">    
+      {% for message in messages %}
+      <div class="alert alert-{{message.tags}}">{{message}}</div>
+      {% endfor %}
+  </div>
+  {% endblock %}
+{% block content %}
+
+
+
+ 
+    <div class="w3-padding-64 w3-padding-large">
+      
+      <br>
+
+      <br>
+      <br>
+      <br>
+      <br>
+      {% if verified %}
+      <h3>修改留言</h3>
+      <form  action="." method="POST">
+        {% csrf_token %}
+        
+        {{form.as_p}}
+        <button type="submit" class="w3-button w3-teal">Send</button>
+      </form>
+      {% endif %}
+    </div>
+
+
+{% endblock %}
+

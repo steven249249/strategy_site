@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+<!-- Main content: shift it to the right by 250 pixels when the sidebar is visible -->
+{% block title %}修改簡介{% endblock %}
+{% block px %}400{% endblock %}
+{% block content %}
+
+
+<div class="w3-row w3-padding-64">
+ 
+
+
+    <div class="w3-padding-64 w3-padding-large">
+      <h1>修改簡介</h1>
+      <br>
+      <p class="w3-opacity">
+
+       {{message}}
+
+      
+      </p>
+      <form action="." method="POST">
+        {% csrf_token %}
+        {{ form.media }}
+        {{ form.as_p }}
+        <button type="submit" class="w3-button w3-teal">送出</button>
+      </form>
+    </div>
+  </div>
+
+
+  
+{% endblock %}

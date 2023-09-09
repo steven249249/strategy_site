@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+{% block title %}
+  {{board.name}}
+{% endblock %}
+{% block px %}250{% endblock %}
+{% block sidebar %}
+<nav class="w3-sidebar w3-bar-block w3-collapse w3-large w3-theme-l5 w3-animate-left" id="mySidebar">
+  <a href="javascript:void(0)" onclick="w3_close()" class="w3-right w3-xlarge w3-padding-large w3-hover-black w3-hide-large" title="Close Menu">
+    <i class="fa fa-remove"></i>
+  </a>
+  <h4 class="w3-bar-item"><b>{{board.name}}</b></h4>
+  {% if moderator %}
+  <a class="w3-bar-item w3-button w3-hover-black" href="{% url 'home-url' moderator.user.id %}">板主：{{moderator.user.name}}</a>
+  {% else %}
+  <p class="w3-bar-item w3-button w3-hover-black">板主：暫缺</p>
+  {% endif %}
+  {% if name %}
+    {% if collected %}
+      <a class="w3-bar-item w3-button w3-hover-black" href="/board/{{board.name}}?method=decollect">取消收藏</a>
+    {% else %}
+      <a class="w3-bar-item w3-button w3-hover-black" href="/board/{{board.name}}?method=collect">收藏此板</a>
+    {% endif %}
+  {% endif %}
+  <a class="w3-bar-item w3-button w3-hover-black" href="/add_post/{{board.name}}">發表文章</a>
+</nav>
+{% endblock %}
+{% block content %}
+<div class="w3-row w3-padding-16">
+</div>
+<div class="w3-cell-row">
+  <div class="w3-container w3-cell">
+    {% if messages %}
+      <div class="w3-row w3-padding-16">
+        {% for message in messages %}
+          <div class="alert alert-{{message.tags}}" align="center">{{message}}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+    {% load replace_enter %}
+    {% if posts %}
+    	{% for post in posts %}
+      <div class="w3-row w3-padding-8">
+        <div class="w3-container">
+          <div class="w3-panel w3-border-top w3-border-bottom w3-border-gray">
+            <h1 class="w3-text-teal"><a href="{% url 'post-url' post.id %}">{{post.title}}</a></h1>
+            <div class="w3-cell-row">
+              <div class="w3-cell"><h3>撰寫者：<a href="{% url 'home-url' post.user.id %}">{{post.user.name}}</a></h3></div>
+              <div class="w3-cell" align="right"><h3>發布時間：{{post.pub_time}}</h3></div>
+            </div>
+          </div>
+        </div>
+      </div>
+  	 {% endfor %}
+    {% else %}
+      <div class="w3-row w3-padding-64">
+        <div class="w3-container">
+          <h1 class="w3-text-teal">還沒有貼文喔，發表第一篇文章吧！</h1>
+          <p></p>
+        </div>
+      </div>
+    {% endif %}
+  {% endblock %}
+  {% block page %}
+  {% if posts %}
+    <div class="w3-center w3-padding-32">
+      <div class="w3-bar">
+      {% for p in pages %}
+        <a class="{% if p == page %}w3-button w3-black{% else %}w3-button w3-hover-black{% endif %}" href="{% url 'board-url' board.name page %}">{{p}}</a>
+      {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+  </div>
+  <div class="w3-container w3-theme-l3 w3-cell" style="width:500px">
+    {% if name %}
+      {% if banned %}
+        <h3>你被ban了</h3>
+      {% else %}
+    <h3>聊天室</h3>
+    <div class="w3-container" id="display" style="overflow:scroll; height:600px;">
+    </div>
+    <div class="w3-container">
+      <form class="w3-container w3-card w3-padding-32 w3-white" id="chat_post_form">
+        {% csrf_token %}
+        <input type="hidden" name="user" id="user" value="{{user.name}}">
+        <input type="hidden" name="board_name" id="board_name" value="{{board.name}}">
+        <input type="text" name="msg" id="msg" width="100px">
+        <input type="submit" value="發送">
+      </form>
+    </div>
+    {% endif %}
+    {% else %}
+    <h3>登入以使用聊天室</h3>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+{% block footer %}
+  <footer id="myFooter">
+    <div class="w3-container w3-theme-l2 w3-padding-32">
+      <h4></h4>
+    </div>
+    <div class="w3-container w3-theme-l1">
+      <p>All right reserved.</p>
+    </div>
+  </footer>
+{% endblock %}
+{% block script %}
+<script>
+  $(document).ready(function(){
+    setInterval(function(){
+      $.ajax({
+        type: 'GET',
+        url: "/get_msg/{{board.name}}/",
+        success: function(response){
+          $("#display").empty();
+          for (var key in response.msgs){
+            let dateString = response.msgs[key].send_time
+              let date = new Date(dateString);
+              let formattedDate = date.toISOString().replace(/T/, '-').replace(/:\d+\.\d+Z$/, '');
+            if(response.user_name==response.msgs[key].user){
+              
+              var tmp="<div class='w3-panel w3-round-xlarge w3-pale-blue'><h5><b>"+response.msgs[key].user+"</b></h5><p>"+response.msgs[key].msg+"</p><span class='time-left'>"+formattedDate+"</span></div>";
+            }else{
+              var tmp="<div class='w3-panel w3-round-xlarge w3-theme-l4'><h5><b>"+response.msgs[key].user+"</b></h5><p>"+response.msgs[key].msg+"</p><span class='time-left'>"+formattedDate+"</span></div>";
+            }
+            $("#display").append(tmp);
+          }
+        },
+        error: function(response){
+          // alert('An error occured!')
+        }
+      });
+    },1000);
+  })
+</script>
+<script type="text/javascript">
+  $(document).on('submit','#chat_post_form',function(e){
+      e.preventDefault();
+      $.ajax({
+        type:'POST',
+        url:'/send_msg',
+        data:{
+          user:$('#user').val(),
+          board_name:$('#board_name').val(),
+          msg:$('#msg').val(),
+          csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
+        },
+        success: function(data){
+          // alert(data)
+        }
+      });
+      document.getElementById('msg').value = ''
+    }
+  );
+</script>
+{% endblock %}

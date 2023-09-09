@@ -1,0 +1,76 @@
+{% extends 'base1.html' %}
+{% load static %}
+
+{% block title %}文章{% endblock %}
+
+{% block px %}0{% endblock %}
+
+{% block content %}
+<nav class="w3-sidebar w3-light-grey w3-collapse w3-top" style="z-index:3;width:260px" id="mySidebar">
+  <div class="w3-container w3-display-container w3-padding-16">
+    <h3>留言區</h3>
+    <hr>
+    {% for comment in comments %}
+       <div class="w3-container">
+        <h6>{{comment.user.name}}:</h6>
+        <p>{{comment.content}}</p>
+        {% if comment.user.name == name %}
+          <a class="w3-button w3-light-grey" href="/remove_comment/{{comment.id}}/">刪除</a>
+          {% if not ban %}
+          <a class="w3-button w3-light-grey" href="/alter_comment/{{comment.id}}/">修改</i></a>    
+          {% endif %}      
+        {% endif %}
+      </div>
+      <hr>
+    {% endfor %}
+    {% if name and not ban %}
+    <form action="." method='POST'>
+      {% csrf_token %}
+      <p><label><i class="fa fa-calendar-check-o"></i>留言</label></p>
+      <input class="w3-input w3-border" type="text" name="content" required>   
+      <input type='submit' name='comment' value='送出'>       
+    </form>
+    {% endif %}
+  </div>
+
+</nav>
+
+<div class="w3-main" style="margin-left:320px;">
+<i class="fa fa-bars w3-button w3-white w3-hide-large w3-xlarge w3-margin-left w3-margin-top" onclick="w3_open()"></i>
+<a href="javascript:void(0)" class="w3-hide-large w3-red w3-button w3-right w3-margin-top w3-margin-right" onclick="document.getElementById('id01').style.display='block'"><i class="fa fa-pencil"></i></a>
+      {% for message in messages %}
+      <div class="alert alert-{{message.tags}}">{{message}}</div>
+      {% endfor %}
+<div id="Borge" class="w3-container person" >
+  <br>
+  <a href="/board/{{ post.board.name }}"><h3>回到{{ post.board.name }}</h3></a>
+  <br>
+  <img class="w3-round  w3-animate-top" src="{% static '01.jfif' %}" style="width:10%;">
+  <h1>作者:{{post.user.name}}</h1>
+  <h2>標題:{{post.title}}</h2>
+  <h4><i class="fa fa-clock-o"></i> {{post.pub_time}}</h4>
+  <h4></h4>
+  <form action='.' method="POST" >
+    {% csrf_token %}
+    {% if name %}
+    <input type='submit' name='like' value='讚'>:{{post.like_count}}</a>
+    <br>
+    <a class="w3-button w3-light-grey" href="/share/{{postid}}">分享<i class="w3-margin-left fa fa-mail-reply"></i></a>
+    {% endif %}
+    <br>
+    {% if verified %}
+      <a class="w3-button w3-light-grey" href="/remove/{{post.id}}">刪除</a>
+      {% if not ban %}
+      <a class="w3-button w3-light-grey" href="/alter_post/{{post.id}}">修改</i></a>
+      {% endif %}
+    {% endif %}
+    
+  </form>
+  <hr>
+  <h3><p>{{post.content|safe}}</p></h3>
+
+</div>
+
+
+
+{% endblock %}

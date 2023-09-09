@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block title %}通知{% endblock %}
+{% block content %}
+{% if loginid %}
+<div class="w3-padding-48"></div>
+	{% for user in userinform %}
+		<div class="w3-main" style="margin-left:450px">
+		 	<div class="w3-row w3-padding-8">
+		    	<div class="w3-twothird w3-container">
+		    		<div class="w3-row w3-padding-8">
+	   				 	<div class="w3-center w3-container w3-panel w3-border w3-border-blue">
+		      				<h1 class="w3-text-teal">{{ user.content|safe }}</h1>
+		      				<p>{{ user.pub_time }}</p>
+		      			</div>
+		      		</div>
+		    	</div>
+		 	</div>
+		</div>
+	{% endfor %}
+{% else %}
+	<div class="w3-main" style="margin-left:450px">
+	 	<div class="w3-row w3-padding-64">
+	    	<div class="w3-twothird w3-container">
+	      	<h1 class="w3-text-teal">登入以查看</h1>
+	    	</div>
+	 	</div>
+	</div>
+{% endif %}
+
+{% endblock %}
+
+{% block sidebar %}
+<nav class="w3-sidebar w3-bar-block w3-collapse w3-large w3-theme-l5 w3-animate-left" id="mySidebar">
+  <a href="javascript:void(0)" onclick="w3_close()" class="w3-right w3-xlarge w3-padding-large w3-hover-black w3-hide-large" title="Close Menu">
+    <i class="fa fa-remove"></i>
+  </a>
+  <h4 class="w3-bar-item"><b>{{ userinfo.name }}的小屋</b></h4>
+<a class="w3-bar-item w3-button w3-hover-black" href="{% url 'home-url' userid %}">個人簡介</a>
+<a class="w3-bar-item w3-button w3-hover-black" href="{% url 'collected-url' userid %}">收藏的討論板</a>
+<a class="w3-bar-item w3-button w3-hover-black" href="{% url 'sharelist-url' userid %}">分享的貼文</a>
+<a class="w3-bar-item w3-button w3-hover-black" href="{% url 'inform-url' userid %}">通知</a>
+</nav>
+{% endblock %}

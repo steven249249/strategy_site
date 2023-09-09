@@ -1,0 +1,43 @@
+{% extends 'base1.html' %}
+{% block title %}
+	各版專區
+{% endblock %}
+{% block px %}0{% endblock %}
+  {% block message %}
+  <div class="w3-padding-24"></div>
+  <div class="w3-row" style="height:2px">  
+      {% for message in messages %}
+      <div class="alert alert-{{message.tags}}">{{message}}</div>
+      {% endfor %}
+
+  </div>
+  {% endblock %}
+{% block content %}
+<div class="w3-row w3-center" style="height:580px;">
+	<div class="w3-col" style="width:20%;"><br></div>
+		<div class="w3-col" style="width:60%">
+	<h1>討論板</h1>
+	{% for board in boards %}
+
+	  <div class="w3-row w3-padding-8">
+	    <div class="w3-center w3-container w3-panel w3-border w3-border-blue">
+	      <a href='/board/{{board.name}}'><h1 class="w3-text-teal">{{board.name}}</h1></a>
+	      <h5>{{board.content}}</h5>
+	    </div>
+
+	  </div>
+	{% endfor %}
+	
+	</div>
+</div>
+{% endblock %}
+
+{% block page %}
+	<div class="w3-center w3-padding-34">
+	    <div class="w3-bar">
+	    	{% for page in pages %}
+	    		<a class="w3-button w3-hover-black" href="/board_all/{{page}}">{{page}}</a>
+	    	{% endfor %}
+	    </div>
+  	</div> 
+{% endblock %}
